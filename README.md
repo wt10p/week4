@@ -1,4 +1,4 @@
-# GEOL0069_Satellite Echo Classification
+# Satellite Echo Classification
 This repository classifies echoes in leads and sea ice using machine learning. It generates an average echo shape, computes the standard deviation for both categories, and compares results against the ESA official classification using a confusion matrix
 
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
