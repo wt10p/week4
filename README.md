@@ -1,8 +1,6 @@
 # Satellite Echo Classification
 This repository classifies echoes in leads and sea ice using machine learning. It generates an average echo shape, computes the standard deviation for both categories, and compares results against the ESA official classification using a confusion matrix
 
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<a id="readme-top"></a>
 
 
 
@@ -87,12 +85,6 @@ This repository classifies echoes in leads and sea ice using machine learning. I
 
 This project is dedicated to colocating Sentinel-3 (OLCI & SRAL) and Sentinel-2 optical data while leveraging unsupervised learning techniques for classifying sea ice and leads. The goal is to develop an automated pipeline that improves Earth Observation (EO) analysis by fusing different satellite datasets and applying machine learning models to classify environmental features.
 
-Why This Project?
-* 🌍 Integrates Sentinel-2 and Sentinel-3 data to improve classification accuracy.
-* 🛰️ Leverages machine learning (K-Means & GMM) to identify patterns in EO data.
-* 📊 Applies clustering techniques for classifying sea ice and leads.
-* 🔄 Automates colocation and processing, reducing manual effort.
-* ✅ Compares model predictions with ESA’s official classification for validation.
 
 Key Learning Outcomes
 * Understanding the colocation process for multi-sensor satellite data.
