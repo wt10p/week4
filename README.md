@@ -59,97 +59,84 @@ Step 3: Integrate Sentinel-3 SRAL Data
 Sentinel-3 SRAL altimetry data is integrated into the analysis. The query_sentinel3_sral_arctic_data() function retrieves SRAL metadata for a specified date range, saved as s3_sral_metadata.csv. Metadata files are loaded, and timestamps are standardized. The check_collocation() function identifies overlapping Sentinel-2 and Sentinel-3 SRAL observations within a 10-minute window. Results are visualized on an interactive map, showing the geographical footprints of overlapping data.
 
 
-<!-- Unsupervised Learning -->
 ## Unsupervised Learning
-This section applies unsupervised learning to Earth Observation (EO), focusing on classification tasks to detect patterns and group data without predefined labels. The key tasks include distinguishing sea ice from leads using Sentinel-2 optical data and classifying sea ice and leads using Sentinel-3 altimetry data. By the end, you'll have a solid foundation in unsupervised learning for remote sensing and EO analysis.
 
-<!-- Introduction to Unsupervised Learning Methods [Bishop and Nasrabadi, 2006] -->
-### Introduction to Unsupervised Learning Methods [Bishop and Nasrabadi, 2006]
-#### Introduction to K-means Clustering
-K-means clustering is an unsupervised learning algorithm that partitions data into k clusters based on feature similarity [MacQueen et al., 1967]. The process involves initializing k centroids, assigning data points to the nearest centroid, updating centroids based on cluster means, and iterating until stability is reached. K-means is widely used for pattern recognition, data segmentation, and exploratory analysis, making it a fundamental tool in unsupervised learning.
-#### Why K-means for Clustering?
-K-means clustering is effective when the data structure is unknown, as it does not require prior knowledge of distribution, making it ideal for exploratory analysis and pattern detection. It is also efficient and scalable, handling large datasets with minimal complexity, making it a preferred choice for real-world applications.
+This section explores unsupervised learning in Earth Observation (EO), focusing on classification tasks to detect patterns and group data without predefined labels. Key tasks include distinguishing sea ice from leads using Sentinel-2 optical data and classifying sea ice and leads using Sentinel-3 altimetry data. By the end, you'll gain a foundation in unsupervised learning for remote sensing and EO analysis.
 
-#### Key Components of K-means
-K-means clustering relies on key factors: choosing k, which must be predefined and impacts results; centroid initialization, which affects final clustering; the assignment step, where data points are grouped by proximity to the nearest centroid using squared Euclidean distance; and the update step, where centroids are recalculated based on the mean position of assigned points.
-#### The Iterative Process of K-means
-K-means iterates through assignment and update steps until centroids stabilize, minimizing intra-cluster variation. This ensures convergence to an optimal clustering solution, though it may sometimes settle on a local optimum.
-#### Advantages of K-means
-K-means is highly efficient, making it ideal for large datasets, and offers easy interpretation, allowing for clear analysis of data patterns.
-#### Basic Code Implementation
-This section provides a K-means clustering implementation as a practical introduction to the algorithm. In Google Colab, the script mounts Google Drive using drive.mount('/content/drive') for seamless dataset access. It also installs Rasterio for geospatial raster data and netCDF4 for handling large-scale scientific data. Using scikit-learn, the script generates 100 random data points, initializes a K-means model with four clusters, and assigns each point using kmeans.fit(X). A scatter plot visualizes the clusters with color-coded points, while computed centroids are marked with black dots. The plot, displayed with plt.show(), illustrates how K-means groups data for pattern recognition and segmentation.
+### Introduction to Unsupervised Learning Methods
+Unsupervised learning identifies patterns in data without predefined labels, making it ideal for exploratory analysis and pattern detection in EO.
 
-```python
-# Python code for K-means clustering
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-import numpy as np
+### Introduction to K-means Clustering
+K-means clustering is an unsupervised algorithm that partitions data into **k clusters** based on feature similarity. The process involves:
+1. Initializing **k centroids**.
+2. Assigning data points to the nearest centroid.
+3. Updating centroids based on cluster means.
+4. Iterating until centroids stabilize.
 
-# Sample data
-X = np.random.rand(100, 2)
+K-means is widely used for pattern recognition, data segmentation, and exploratory analysis.
 
-# K-means model
-kmeans = KMeans(n_clusters=4)
-kmeans.fit(X)
-y_kmeans = kmeans.predict(X)
+### Reasons of using K-means for Clustering
+- **No prior knowledge required**: Ideal for unknown data structures.
+- **Efficient and scalable**: Handles large datasets with minimal complexity.
+- **Versatile**: Suitable for real-world applications like EO analysis.
 
-# Plotting
-plt.scatter(X[:, 0], X[:, 1], c=y_kmeans, cmap='viridis')
-centers = kmeans.cluster_centers_
-plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
-plt.show()
-```
+### Key Components of K-means
+1. **Choosing k**: The number of clusters must be predefined and impacts results.
+2. **Centroid initialization**: Affects final clustering outcomes.
+3. **Assignment step**: Data points are grouped by proximity to the nearest centroid using squared Euclidean distance.
+4. **Update step**: Centroids are recalculated based on the mean position of assigned points.
 
-![image](https://github.com/user-attachments/assets/e336776c-92d6-4d6a-b3fc-be0c1f41960d)
+### The Iterative Process of K-means
+K-means iterates through assignment and update steps until centroids stabilize, minimizing intra-cluster variation. While it converges to an optimal solution, it may sometimes settle on a local optimum.
 
-Visualization of K-means clustering results on a randomly generated dataset. The colored points represent individual data samples grouped into four clusters, while the black dots indicate the centroids of each cluster, calculated by the K-means algorithm.
+### Advantages of K-means
+- **Efficiency**: Works well with large datasets.
+- **Interpretability**: Provides clear insights into data patterns.
 
-<!-- Gaussian Mixture Models (GMM) [Bishop and Nasrabadi, 2006] -->
-### Gaussian Mixture Models (GMM) [Bishop and Nasrabadi, 2006]
-#### Introduction to Gaussian Mixture Models
-Gaussian Mixture Models (GMM) are a probabilistic clustering technique that models data as a combination of multiple Gaussian distributions, each with its own mean and variance [Reynolds et al., 2009]. GMMs are widely used for clustering and density estimation, providing a flexible way to represent complex data distributions.
+### Basic Code Implementation
+Below is a practical implementation of K-means clustering:
+1. **Setup**: Mount Google Drive and install necessary libraries (`Rasterio` for geospatial data, `netCDF4` for scientific data).
+2. **Data Generation**: Create 100 random data points.
+3. **Model Initialization**: Initialize a K-means model with 4 clusters.
+4. **Clustering**: Assign data points to clusters using `kmeans.fit(X)`.
+5. **Visualization**: Plot clusters with color-coded points and mark centroids with black dots.
 
-#### Why Gaussian Mixture Models for Clustering?
-Gaussian Mixture Models (GMM) offer significant advantages in clustering by providing a soft clustering approach, where each data point is assigned a probability of belonging to multiple clusters rather than being placed into a single category like in K-means. This probabilistic classification allows for a more nuanced and flexible clustering method, especially when dealing with uncertainty. Additionally, unlike K-means, which assumes clusters are spherical, GMM adapts to varying cluster shapes and sizes by adjusting the covariance structure of each Gaussian component. This makes it particularly effective for datasets with overlapping distributions or varying density regions, providing a more precise and adaptable clustering solution.
+### Gaussian Mixture Models (GMM)
+
+#### Introduction
+Gaussian Mixture Models (GMM) are a probabilistic clustering technique that models data as a combination of multiple Gaussian distributions, each with its own mean and variance. GMMs are widely used for clustering and density estimation, offering flexibility in representing complex data distributions.
+
+#### Reasons why Use GMM for Clustering?
+- **Soft Clustering**: Assigns probabilities to data points for belonging to multiple clusters, capturing uncertainty and overlapping structures.
+- **Flexible Cluster Shapes**: Unlike K-means, GMM adapts to varying cluster shapes and sizes by adjusting the covariance structure of each Gaussian component.
+- **Effective for Complex Data**: Ideal for datasets with overlapping distributions or varying densities.
 
 #### Key Components of GMM
-Gaussian Mixture Models (GMM) require defining the number of components, similar to selecting clusters in K-means, as it determines how many Gaussian distributions will model the data. The model is refined using the Expectation-Maximization (EM) algorithm, which alternates between estimating the probability of each data point belonging to a Gaussian and updating parameters like mean, variance, and weight to maximize likelihood. Additionally, the covariance structure plays a crucial role in shaping clusters, allowing for spherical, diagonal, tied, or fully adaptable cluster forms, making GMM highly flexible for complex data distributions.
-
+1. **Number of Components**: Determines how many Gaussian distributions will model the data.
+2. **Expectation-Maximization (EM) Algorithm**: 
+   - **E-step**: Estimates the probability of each data point belonging to a Gaussian component.
+   - **M-step**: Updates the mean, variance, and weight of each Gaussian to maximize likelihood.
+3. **Covariance Structure**: Allows for flexible cluster shapes (spherical, diagonal, tied, or fully adaptable).
 
 #### The EM Algorithm in GMM
-The Expectation-Maximization (EM) algorithm optimizes clustering through an iterative two-step process. In the Expectation Step (E-step), probabilities are assigned to each data point, estimating the likelihood of belonging to a specific Gaussian component. The Maximization Step (M-step) then updates the mean, variance, and weight of each Gaussian to maximize the model’s likelihood. This cycle repeats until convergence, when the parameters stabilize, ensuring an optimal fit for the dataset.
-
+The EM algorithm iteratively optimizes clustering:
+1. **E-step**: Assigns probabilities to data points for each Gaussian component.
+2. **M-step**: Updates Gaussian parameters (mean, variance, weight) to maximize likelihood.
+3. **Convergence**: Repeats until parameters stabilize, ensuring an optimal fit.
 
 #### Advantages of GMM
-Gaussian Mixture Models (GMM) offer probabilistic soft clustering, assigning a probability score to each data point’s cluster membership, which captures uncertainty and overlapping structures. Unlike K-means, GMM allows for flexible cluster shapes, accommodating varying sizes, orientations, and densities. This adaptability makes GMM an excellent choice for clustering complex datasets with overlapping distributions.
+- **Probabilistic Clustering**: Captures uncertainty and overlapping structures.
+- **Flexible Cluster Shapes**: Adapts to varying sizes, orientations, and densities.
+- **Effective for Complex Data**: Handles datasets with overlapping distributions.
 
 #### Basic Code Implementation
-Below is a basic Gaussian Mixture Model (GMM) implementation, providing a foundational understanding of how it works in clustering tasks. The code uses GaussianMixture from sklearn.mixture, along with matplotlib for visualization and numpy for numerical operations. It generates 100 random data points in a 2D space, initializes a GMM with three components, and fits the model to the dataset. Cluster assignments are predicted, and the results are visualized with data points color-coded by cluster, while computed cluster centers (means) are highlighted in black. This demonstrates how GMM groups data using probabilistic distributions.
+Below is a simple GMM implementation using `sklearn.mixture` and `matplotlib`:
+1. **Setup**: Import necessary libraries (`GaussianMixture`, `matplotlib`, `numpy`).
+2. **Data Generation**: Create 100 random 2D data points.
+3. **Model Initialization**: Initialize a GMM with 3 components.
+4. **Clustering**: Fit the model to the data and predict cluster assignments.
+5. **Visualization**: Plot data points color-coded by cluster, with cluster centers highlighted in black.
 
-```python
-from sklearn.mixture import GaussianMixture
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Sample data
-X = np.random.rand(100, 2)
-
-# GMM model
-gmm = GaussianMixture(n_components=3)
-gmm.fit(X)
-y_gmm = gmm.predict(X)
-
-# Plotting
-plt.scatter(X[:, 0], X[:, 1], c=y_gmm, cmap='viridis')
-centers = gmm.means_
-plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
-plt.title('Gaussian Mixture Model')
-plt.show()
-```
-
-![image](https://github.com/user-attachments/assets/ba6c9c55-ed2b-43ef-82a8-543445e64478)
-
-Visualization of clustering results using the Gaussian Mixture Model (GMM). The data points are grouped into three distinct clusters, each represented by a different color. The black points indicate the computed cluster centers (means), highlighting the probabilistic nature of GMM clustering.
 
 ### Image Classification
 This section applies unsupervised learning for image classification, focusing on distinguishing sea ice from leads using Sentinel-2 imagery. By leveraging clustering algorithms, patterns can be identified and classified without labeled data, improving the analysis and interpretation of remote sensing data efficiently.
