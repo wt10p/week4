@@ -15,64 +15,48 @@ Evaluate results using confusion matrices and accuracy metrics.
 
 Satellite data analysis is a dynamic field, and methods may vary by dataset. This project offers a practical guide to integrating remote sensing and machine learning.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-### Built With
+This project employs a variety of Python libraries and geospatial tools to process, analyze, and classify Earth Observation (EO) data. The key dependencies include:
 
-This project utilizes key Python libraries and geospatial tools to process, analyze, and classify Earth Observation (EO) data. Below are the major dependencies used:
+Scikit-Learn – Utilized for implementing machine learning models such as K-Means and GMM.
 
-* NumPy – Numerical computations and matrix operations
-* Pandas – Data manipulation and tabular processing
-* Matplotlib – Visualization of classification results
-* Rasterio – Handling Sentinel-2 geospatial raster data
-* netCDF4 – Processing Sentinel-3 altimetry data
-* Scikit-Learn – Machine learning models (K-Means, GMM)
-* Folium – Geospatial data visualization
-* Shapely – Geometric operations for colocation analysis
-* Requests – API calls for Sentinel-3 metadata retrieval
+Rasterio – For handling Sentinel-2 geospatial raster data.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Shapely – Used for performing geometric operations, particularly in colocation analysis.
 
+netCDF4 – Enables the processing of Sentinel-3 altimetry data.
 
-<!-- Colocating Sentinel-3 OLCI/SRAL and Sentinal-2 Optical Data -->
-## Colocating Sentinel-3 OLCI/SRAL and Sentinal-2 Optical Data
-This section focuses on co-locating Sentinel-2 and Sentinel-3 data, combining Sentinel-2’s high spatial resolution with Sentinel-3’s broader coverage and altimetry insights to improve Earth observation analysis. This integration enhances environmental monitoring, particularly for sea ice and lead classification. The next steps outline how to identify, align, and analyze these datasets effectively.
+Folium – Facilitates the visualization of geospatial data.
 
-### Step 0: Read in Functions Needed
+NumPy – Numerical computations and matrix operations.
 
-This process begins by loading essential functions to efficiently retrieve Sentinel-2 and Sentinel-3 metadata, following the Week 3 approach. Google Drive is mounted in Google Colab for seamless file access. Using requests, pandas, shapely, and folium, the script fetches, processes, and visualizes data from the Copernicus Data Space Ecosystem. Authentication is handled via access tokens, and data is queried by date range, location, and cloud cover. Sentinel-3 OLCI, SRAL, and Sentinel-2 optical data are retrieved, with products downloadable by unique IDs. Geospatial footprints are processed to match images based on geographic overlap, and results are visualized using interactive maps. Time-handling functions ensure accurate timestamp formatting, enabling smooth integration with scientific research and Earth observation projects. 🚀
+Requests – Handles API calls for retrieving Sentinel-3 metadata.
 
-<!-- Step 1: Get the Metadata for satellites (Sentinel-2 and Sentinel-3 OLCI in this case) -->
-### Step 1: Get the Metadata for satellites (Sentinel-2 and Sentinel-3 OLCI in this case)
-This process co-locates Sentinel-2 and Sentinel-3 OLCI data by retrieving their metadata separately, following the Week 3 approach. The goal is to identify common observation locations, creating sentinel3_olci_data and sentinel2_data for further analysis. Authentication is required to obtain and refresh access tokens before setting a date range and file path for retrieval. The script queries Sentinel-3 OLCI and Sentinel-2 optical data using query_sentinel3_olci_arctic_data() and query_sentinel2_arctic_data(), applying a 0–10% cloud cover filter for Sentinel-2. Metadata is saved as sentinel3_olci_metadata.csv and sentinel2_metadata.csv for alignment and analysis. To enhance visualization, both datasets are displayed in structured tables using IPython's display(), making it easier to inspect key details like product IDs, acquisition times, geospatial footprints, and cloud cover percentages.
+Pandas – Manages data manipulation and tabular processing.
 
-![422d13d80a9193db1c3d56e377ac803](https://github.com/user-attachments/assets/cfcaa103-e028-45e3-bcf9-b91b6957116c)
+Matplotlib – Visualizes classification results effectively.
 
-The table displays the metadata retrieved for Sentinel-3 OLCI images within the specified time range. It includes essential attributes such as unique product IDs, names, content types, origin dates, modification dates, and storage paths. This metadata is crucial for identifying and accessing relevant satellite data for further analysis and co-location with Sentinel-2.
-
-![7a75d1a91255c7e1a9145b45bb2fb72](https://github.com/user-attachments/assets/b428d280-5b6a-4ce4-a588-f9d46936ab1d)
-This table displays metadata retrieved for Sentinel-2 images using the Copernicus Data Space API. It includes details such as product IDs, content type, content length, acquisition dates, publication and modification timestamps, online availability, and storage paths. This dataset is essential for analyzing and identifying relevant Sentinel-2 imagery based on specific timeframes and geospatial locations.
-
-#### Co-locate the data
-This process identifies co-location pairs by matching Sentinel-2 and Sentinel-3 OLCI data based on their geo_footprint. Metadata timestamps from ContentDate are standardized using eval(), pd.to_datetime(), and make_timezone_naive() for consistent time comparisons. The check_collocation() function detects overlapping observations within a 10-minute window, aligning both datasets for geospatial analysis. The resulting results DataFrame contains matched records where both satellites observed the same location. To visualize co-located data, plot_results() maps the first five observations using folium, and IPython's display() renders an interactive map, allowing users to inspect overlapping locations.
-
-![image](https://github.com/user-attachments/assets/f136ac9d-181f-42e3-9079-af0e87e2fdbf)
-The table displays the first five rows of the collocated dataset, showing matched Sentinel-2 and Sentinel-3 OLCI observations. Each row contains details about the two satellites, including their unique IDs, footprints (geographical coverage), and the time range during which their observations overlap within a 10-minute window. This output helps verify the successful identification of collocated satellite data for further analysis.
-
-![image](https://github.com/user-attachments/assets/e0bb2933-f303-4a27-ace3-e0dab44e97eb)
-This interactive map visualization displays the geographical footprints of the first five collocated satellite observations from Sentinel-2 and Sentinel-3 OLCI. The overlapping satellite data areas are highlighted, showing the regions where both satellites have captured observations within the specified time window.
+These tools collectively enable comprehensive analysis and visualization of EO data
 
 
-<!-- Proceeding with Sentinel-3 OLCI Download -->
-#### Proceeding with Sentinel-3 OLCI Download
-Next, the focus shifts to retrieving Sentinel-3 OLCI data, following the same structured approach used for Sentinel-2 to ensure consistency. By applying the same filename conversion logic, the required datasets are systematically accessed and downloaded from the Copernicus Dataspace, ensuring seamless integration into the analysis pipeline. This step facilitates the download of a specific Sentinel-3 OLCI product. The download_dir variable defines the target directory, while product_id and file_name are extracted from the results DataFrame, selecting the first product for download. The download_single_product() function, along with an access_token, ensures secure retrieval of the satellite data, storing it in the designated directory for further analysis. Users can modify product_id, file_name, and download_dir to customize their downloads.
+Colocating Sentinel-3 OLCI/SRAL and Sentinel-2 Optical Data
+This section focuses on combining Sentinel-2 and Sentinel-3 data to enhance Earth observation analysis. Sentinel-2 provides high spatial resolution, while Sentinel-3 offers broader coverage and altimetry insights, improving environmental monitoring, especially for sea ice and lead classification. Below are the steps to align and analyze these datasets effectively.
 
-#### Sentinel-3 SRAL
-This process extends co-location analysis by integrating Sentinel-3 SRAL altimetry data alongside Sentinel-2 and Sentinel-3 OLCI observations. The query_sentinel3_sral_arctic_data() function retrieves SRAL metadata for a specified date range using an access token, storing it in s3_sral_metadata.csv for further processing. Previously saved metadata files (s3_sral_metadata.csv and sentinel2_metadata.csv) are loaded with pd.read_csv(), and ContentDate timestamps are standardized using eval(), pd.to_datetime(), and make_timezone_naive() for consistency. The check_collocation() function identifies overlapping Sentinel-2 and Sentinel-3 SRAL observations within a 10-minute window, storing results in a results DataFrame. To visualize co-located data, plot_results() maps the top five matches using GeoJSON footprints, and IPython's display() renders an interactive world map, allowing users to analyze spatial relationships and assess co-location accuracy.
+Step 0: Load Essential Functions
+The process starts by loading necessary functions to retrieve Sentinel-2 and Sentinel-3 metadata. Google Drive is mounted in Google Colab for file access. Using libraries like requests, pandas, shapely, and folium, the script fetches, processes, and visualizes data from the Copernicus Data Space Ecosystem. Authentication is handled via access tokens, and data is queried by date, location, and cloud cover. Sentinel-3 OLCI, SRAL, and Sentinel-2 optical data are retrieved, with footprints processed for geographic overlap. Results are visualized on interactive maps, and timestamps are standardized for accurate analysis.
 
-![image](https://github.com/user-attachments/assets/908fe20f-02df-403e-9937-32f8b527bc1b)
-This interactive map visualizes the collocation of Sentinel-2 and Sentinel-3 SRAL satellite data. The blue outlines represent the geographical footprints of the detected overlaps, illustrating how the two satellite datasets align over the Arctic region. This visualization helps assess spatial intersections and validate the effectiveness of the collocation process.
+Step 1: Retrieve Metadata for Sentinel-2 and Sentinel-3 OLCI
+Metadata for Sentinel-2 and Sentinel-3 OLCI is retrieved separately to identify common observation locations. Authentication is required to obtain access tokens. The script queries Sentinel-3 OLCI and Sentinel-2 data using specific functions, applying a 0–10% cloud cover filter for Sentinel-2. Metadata is saved as CSV files (sentinel3_olci_metadata.csv and sentinel2_metadata.csv) for alignment. Key details like product IDs, acquisition times, and footprints are displayed in structured tables for inspection.
+
+Co-locate the Data
+Co-location pairs are identified by matching Sentinel-2 and Sentinel-3 OLCI data based on their geo_footprint. Timestamps are standardized for consistent comparisons. The check_collocation() function detects overlapping observations within a 10-minute window, and results are stored in a DataFrame. The first five co-located observations are visualized on an interactive map using folium.
+
+Step 2: Download Sentinel-3 OLCI Data
+The next step involves downloading Sentinel-3 OLCI data using a structured approach. The download_single_product() function retrieves the data from Copernicus Dataspace, storing it in a specified directory. Users can customize the download by modifying the product_id, file_name, and download_dir.
+
+Step 3: Integrate Sentinel-3 SRAL Data
+Sentinel-3 SRAL altimetry data is integrated into the analysis. The query_sentinel3_sral_arctic_data() function retrieves SRAL metadata for a specified date range, saved as s3_sral_metadata.csv. Metadata files are loaded, and timestamps are standardized. The check_collocation() function identifies overlapping Sentinel-2 and Sentinel-3 SRAL observations within a 10-minute window. Results are visualized on an interactive map, showing the geographical footprints of overlapping data.
 
 
 <!-- Unsupervised Learning -->
