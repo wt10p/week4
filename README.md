@@ -176,4 +176,169 @@ Below is a simple GMM implementation using `sklearn.mixture` and `matplotlib`:
 4. **Clustering**: Fit the model to the data and predict cluster assignments.
 5. **Visualization**: Plot data points color-coded by cluster, with cluster centers highlighted in black.
 
+```python
+from sklearn.mixture import GaussianMixture
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Sample data
+X = np.random.rand(100, 2)
+
+# GMM model
+gmm = GaussianMixture(n_components=3)
+gmm.fit(X)
+y_gmm = gmm.predict(X)
+
+# Plotting
+plt.scatter(X[:, 0], X[:, 1], c=y_gmm, cmap='viridis')
+centers = gmm.means_
+plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+plt.title('Gaussian Mixture Model')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/26351cee-c6d9-48b1-b36d-cfa89f5bcd89)
+
+Image Classification
+This section uses unsupervised learning for image classification, focusing on distinguishing sea ice from leads in Sentinel-2 imagery. By applying clustering algorithms, patterns can be identified and classified without labeled data, enhancing the analysis of remote sensing data.
+
+K-Means Implementation
+This Python script applies K-means clustering to a Sentinel-2 satellite image, classifying surface features based on reflectance values from the Red (B4) band. Here’s a simplified breakdown:
+
+Libraries:
+
+rasterio: For loading satellite imagery.
+
+numpy: For numerical operations.
+
+KMeans from sklearn.cluster: For clustering.
+
+matplotlib.pyplot: For visualization.
+
+Steps:
+
+Load Band 4 using rasterio.open() and store pixel values in a NumPy array.
+
+Apply a valid data mask to filter out no-data pixels.
+
+Reshape the image data into a 1D array.
+
+Apply K-means with 2 clusters (n_clusters=2) to classify surface types (e.g., sea ice and open water).
+
+Reshape the classified labels to match the original image dimensions, assigning -1 to masked pixels.
+
+Visualize the results using plt.imshow(), with distinct colors representing different clusters.
+
+This approach enables unsupervised classification of Sentinel-2 imagery, providing insights into surface variations for applications like climate monitoring, environmental research, and land cover classification—without requiring labeled training data.
+
+```python
+import rasterio
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+base_path = "/content/drive/MyDrive/GEOL0069/Week 4/Unsupervised Learning/S2A_MSIL1C_20190301T235611_N0207_R116_T01WCU_20190302T014622.SAFE/GRANULE/L1C_T01WCU_A019275_20190301T235610/IMG_DATA/" # You need to specify the path
+bands_paths = {
+    'B4': base_path + 'T01WCU_20190301T235611_B04.jp2',
+    'B3': base_path + 'T01WCU_20190301T235611_B03.jp2',
+    'B2': base_path + 'T01WCU_20190301T235611_B02.jp2'
+}
+
+# Read and stack the band images
+band_data = []
+for band in ['B4', 'B3', 'B2']:
+    with rasterio.open(bands_paths[band]) as src:
+        band_data.append(src.read(1))
+
+# Stack bands and create a mask for valid data (non-zero values in all bands)
+band_stack = np.dstack(band_data)
+valid_data_mask = np.all(band_stack > 0, axis=2)
+
+# Reshape for K-means, only including valid data
+X = band_stack[valid_data_mask].reshape((-1, 3))
+
+# K-means clustering
+kmeans = KMeans(n_clusters=2, random_state=0).fit(X)
+labels = kmeans.labels_
+
+# Create an empty array for the result, filled with a no-data value (e.g., -1)
+labels_image = np.full(band_stack.shape[:2], -1, dtype=int)
+
+# Place cluster labels in the locations corresponding to valid data
+labels_image[valid_data_mask] = labels
+
+# Plotting the result
+plt.imshow(labels_image, cmap='viridis')
+plt.title('K-means clustering on Sentinel-2 Bands')
+plt.colorbar(label='Cluster Label')
+plt.show()
+```
+
+![image](https://github.com/user-attachments/assets/5f7c5350-fad0-49e4-bd55-ad49512ccef9)
+
+## GMM Implementation
+
+This Python script applies Gaussian Mixture Model (GMM) clustering to a Sentinel-2 B4 optical band using `scikit-learn`. Here’s a simplified breakdown:
+
+1. **Libraries**:
+   - `rasterio`: For reading the B4 band.
+   - `numpy`: For data manipulation.
+   - `GaussianMixture` from `sklearn.mixture`: For GMM clustering.
+   - `matplotlib.pyplot`: For visualization.
+
+2. **Steps**:
+   - Read the B4 band using `rasterio` and store the data in a NumPy array.
+   - Create a mask to exclude zero-value (no-data) pixels.
+   - Reshape the valid data for clustering.
+   - Apply GMM with 2 components to perform soft clustering, where each pixel is assigned a probability of belonging to each cluster.
+   - Store the results in an array, assigning -1 to no-data areas.
+   - Visualize the clusters using `matplotlib`, with distinct colors representing different clusters.
+
+This method is effective for analyzing sea ice, land cover, and environmental patterns in Sentinel-2 imagery, providing a probabilistic approach to unsupervised classification.
+
+```python
+import rasterio
+import numpy as np
+from sklearn.mixture import GaussianMixture
+import matplotlib.pyplot as plt
+
+# Paths to the band images
+base_path = "/content/drive/MyDrive/GEOL0069/Week 4/Unsupervised Learning/S2A_MSIL1C_20190301T235611_N0207_R116_T01WCU_20190302T014622.SAFE/GRANULE/L1C_T01WCU_A019275_20190301T235610/IMG_DATA/" # You need to specify the path
+bands_paths = {
+    'B4': base_path + 'T01WCU_20190301T235611_B04.jp2',
+    'B3': base_path + 'T01WCU_20190301T235611_B03.jp2',
+    'B2': base_path + 'T01WCU_20190301T235611_B02.jp2'
+}
+
+# Read and stack the band images
+band_data = []
+for band in ['B4', 'B3', 'B2']:
+    with rasterio.open(bands_paths[band]) as src:
+        band_data.append(src.read(1))
+
+# Stack bands and create a mask for valid data (non-zero values in all bands)
+band_stack = np.dstack(band_data)
+valid_data_mask = np.all(band_stack > 0, axis=2)
+
+# Reshape for GMM, only including valid data
+X = band_stack[valid_data_mask].reshape((-1, 3))
+
+# GMM clustering
+gmm = GaussianMixture(n_components=2, random_state=0).fit(X)
+labels = gmm.predict(X)
+
+# Create an empty array for the result, filled with a no-data value (e.g., -1)
+labels_image = np.full(band_stack.shape[:2], -1, dtype=int)
+
+# Place GMM labels in the locations corresponding to valid data
+labels_image[valid_data_mask] = labels
+
+# Plotting the result
+plt.imshow(labels_image, cmap='viridis')
+plt.title('GMM clustering on Sentinel-2 Bands')
+plt.colorbar(label='Cluster Label')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/28386ef2-8b7c-49ee-b6ca-15d024bcc14f)
+
+
 
