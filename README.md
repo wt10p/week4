@@ -1,4 +1,4 @@
-# GEOL0069_Satellite Echo Classification
+# GEOL0069_Unsupervised_Learning_Methods
 This repository uses machine learning to classify echoes into **sea ice** and **leads**. It calculates average echo shapes, computes standard deviations, and evaluates results against ESA's classification using a confusion matrix.
 
 
